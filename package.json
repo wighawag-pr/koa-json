@@ -1,5 +1,5 @@
 {
-  "name": "koa-json",
+  "name": "wighawag-koa-json",
   "version": "2.0.2",
   "main": "index.js",
   "description": "pretty (non-compressed) json response middleware",
