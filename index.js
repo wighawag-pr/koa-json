@@ -23,7 +23,8 @@ const hasOwnProperty = Object.hasOwnProperty
 
 const defaultOptions = {
   pretty: true,
-  spaces: 2
+  spaces: 2,
+  replacer: null
 }
 
 /**
@@ -45,13 +46,14 @@ const isStream = (maybeStream) => maybeStream &&
  * @param {boolean=} options.pretty
  *   Whether to format the json with newlines and spaces. Default `true`
  * @param {number=} options.spaces number of spaces to use as tab
+ * @param {function=} options.replacer JSON.stringify replacer option
  * @param {string=} options.param
  *   query-string param that will bypass pretty config if present
  * @return {Middleware}
  * @api public
  */
 module.exports = function (options) {
-  const { pretty, spaces, param } = Object.assign({}, defaultOptions, options)
+  const { pretty, spaces, param, replacer } = Object.assign({}, defaultOptions, options)
 
   return async (ctx, next) => {
     await next()
@@ -72,11 +74,12 @@ module.exports = function (options) {
       ctx.response.type = 'json'
       const stringify = StreamStringify()
       if (prettify) stringify.space = spaces
+      if (replacer) stringify.replacer = replacer
       ctx.body = body.pipe(stringify)
       return
     }
 
     // prettify JSON responses
-    if (prettify) ctx.body = JSON.stringify(body, null, spaces)
+    if (prettify) ctx.body = JSON.stringify(body, replacer, spaces)
   }
 }
